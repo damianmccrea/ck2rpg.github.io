@@ -86,7 +86,8 @@ function assignCultures() {
     for (let i = 0; i < world.kingdoms.length; i++) {
         let kingdom = world.kingdoms[i];
         let heritage = world.kingdoms[i].empire.titleName
-        let culture = createCulture(heritage)
+        let cultureProvinces = world.kingdoms[i].ownProvinces
+        let culture = createCulture(heritage, cultureProvinces)
         kingdom.culture = culture;
         if (world.cultures) {
             world.cultures.push(culture)
@@ -111,7 +112,7 @@ function assignCultures() {
 }
 
 // Main function
-function createCulture(heritage, parent) {
+function createCulture(heritage, cultureProvinces, parent) {
     let culture = {};
     let ethos = pickFrom(cultureEthosList) 
     if (parent) {
@@ -132,7 +133,7 @@ function createCulture(heritage, parent) {
         culture.martial_custom = pickFrom(martialCustomRuleList)
         culture.ethos = ethos
         culture.language = createLanguage();
-        culture.traditions = getCultureTraditions(heritage, ethos)
+        culture.traditions = getCultureTraditions(heritage, ethos, cultureProvinces)
         culture.coa_gfx = getRandomCOA()
         culture.buildings_gfx = getRandomCultureBuildings();
         culture.clothing_gfx = getRandomCultureClothing();

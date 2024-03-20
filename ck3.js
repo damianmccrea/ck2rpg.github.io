@@ -46,9 +46,7 @@ function createProvinceDefinitions() {
 
 function createProvinceTerrain() {
     //ALWAYS NEED CORRESPONDING CHANGES IN MASKING FOR ANY CHANGES HERE
-    let t = `${daBom}default_land=plains\n`
-    t += `default_sea=sea\n`
-    t += `default_coastal_sea=coastal_sea\n`
+    console.log(`createProvinceTerrain called`)
     let count = 0;
     for (let i = 0; i < world.provinces.length; i++) {
         let p = world.provinces[i]
@@ -60,70 +58,47 @@ function createProvinceTerrain() {
             if (cell.bigCell.elevation > limits.seaLevel.upper) {
                 //only assign terrain above sea level.
                 if (cell.bigCell.highPointRiver && cell.bigCell.elevation > 40 && cell.bigCell.elevation < 70 && cell.bigCell.desert === false && ((n > 0.1 && n < 0.4) || (n > 0.6 && n < 0.9))) {
-                    t += `${count}=`
-                    t += `farmlands`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `farmlands`
                 } else if (cell.bigCell.elevation > limits.seaLevel.upper && cell.bigCell.moisture > 150 && cell.bigCell.y < world.steppeTop && cell.bigCell.y > world.steppeBottom) { //using steppe as cutoff of main deserts indicator to keep jungles close to equator
-                    t += `${count}=`
-                    t += `jungle`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `jungle`
                 } else if (cell.bigCell.desert) {
                     if (cell.elevation > limits.mountains.lower) {
-                        t += `${count}=`
-                        t += `desert_mountains`
-                        t += `\n`
                         world.provinces[i]["terrain"] = `desert_mountains`
                     } else if ((cell.bigCell.y > world.steppeTop || cell.bigCell.y < world.steppeBottom)) {
-                        t += `${count}=`
-                        t += `steppe`
-                        t += `\n`
                         world.provinces[i]["terrain"] = `steppe`
                     } else if (cell.bigCell.moisture < 25) {
-                        t += `${count}=`
-                        t += `drylands`
-                        t += `\n`
                         world.provinces[i]["terrain"] = `drylands`
                     } else {
-                        t += `${count}=`
-                        t += `desert`
-                        t += `\n`
                         world.provinces[i]["terrain"] = `desert`
                     }
                 } else if (cell.bigCell.elevation > limits.mountains.lower) {
-                    t += `${count}=`
-                    t += `mountains`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `mountains`
                 } else if (limits.mountains.lower - cell.bigCell.elevation < 50) {
-                    t += `${count}=`
-                    t += `hills`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `hills`
                 } else if (!cell.bigCell.maskMarked && ((n > 0.1 && n < 0.2) || (n > 0.6 && n < 0.9))) {
-                    t += `${count}=`
-                    t += `forest`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `forest`
                 } else if (terrain === "arctic") {
-                    t += `${count}=`
-                    t += `taiga`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `taiga`
                 } else if (terrain === "grass") {
-                    t += `${count}=`
-                    t += `plains`
-                    t += `\n`
                     world.provinces[i]["terrain"] = `plains`
                 } else if (terrain === "beach") {
-                    t += `${count}=` // need because you won't be setting terrain for seas, etc.
-                    t += `plains`
-                    t += `\n`
-                    world.provinces[i]["terrain"] = `plains`
+                    world.provinces[i]["terrain"] = `plains` // need because you won't be setting terrain for seas, etc.
                 }
             }
         }
+        console.log(`Province - ${i} - ${world.provinces[i]["terrain"]}`)
+    }
+}
+
+function outputProvinceTerrain() {
+    let t = `${daBom}default_land=plains\n`
+    t += `default_sea=sea\n`
+    t += `default_coastal_sea=coastal_sea\n`
+    let count = 0;
+    for (let i = 0; i < world.provinces.length; i++) {
+        t += `${count}=`
+        t += `${world.provinces[i]["terrain"]}`
+        t += `\n`
     }
     console.log(t)
     var data = new Blob([t], {type: 'text/plain'})
@@ -133,6 +108,96 @@ function createProvinceTerrain() {
     document.getElementById('terrain-download-link').href = url
     document.getElementById('terrain-download-link').click()
 }
+
+// function createProvinceTerrain() {
+//     //ALWAYS NEED CORRESPONDING CHANGES IN MASKING FOR ANY CHANGES HERE
+//     let t = `${daBom}default_land=plains\n`
+//     t += `default_sea=sea\n`
+//     t += `default_coastal_sea=coastal_sea\n`
+//     let count = 0;
+//     for (let i = 0; i < world.provinces.length; i++) {
+//         let p = world.provinces[i]
+//         if (p.cells > 0) {
+//             count += 1;
+//             let cell = world.smallMap[p.y][p.x]
+//             let n = noise(cell.bigCell.x, cell.bigCell.y)
+//             let terrain = biome(cell.bigCell)
+//             if (cell.bigCell.elevation > limits.seaLevel.upper) {
+//                 //only assign terrain above sea level.
+//                 if (cell.bigCell.highPointRiver && cell.bigCell.elevation > 40 && cell.bigCell.elevation < 70 && cell.bigCell.desert === false && ((n > 0.1 && n < 0.4) || (n > 0.6 && n < 0.9))) {
+//                     t += `${count}=`
+//                     t += `farmlands`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `farmlands`
+//                 } else if (cell.bigCell.elevation > limits.seaLevel.upper && cell.bigCell.moisture > 150 && cell.bigCell.y < world.steppeTop && cell.bigCell.y > world.steppeBottom) { //using steppe as cutoff of main deserts indicator to keep jungles close to equator
+//                     t += `${count}=`
+//                     t += `jungle`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `jungle`
+//                 } else if (cell.bigCell.desert) {
+//                     if (cell.elevation > limits.mountains.lower) {
+//                         t += `${count}=`
+//                         t += `desert_mountains`
+//                         t += `\n`
+//                         world.provinces[i]["terrain"] = `desert_mountains`
+//                     } else if ((cell.bigCell.y > world.steppeTop || cell.bigCell.y < world.steppeBottom)) {
+//                         t += `${count}=`
+//                         t += `steppe`
+//                         t += `\n`
+//                         world.provinces[i]["terrain"] = `steppe`
+//                     } else if (cell.bigCell.moisture < 25) {
+//                         t += `${count}=`
+//                         t += `drylands`
+//                         t += `\n`
+//                         world.provinces[i]["terrain"] = `drylands`
+//                     } else {
+//                         t += `${count}=`
+//                         t += `desert`
+//                         t += `\n`
+//                         world.provinces[i]["terrain"] = `desert`
+//                     }
+//                 } else if (cell.bigCell.elevation > limits.mountains.lower) {
+//                     t += `${count}=`
+//                     t += `mountains`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `mountains`
+//                 } else if (limits.mountains.lower - cell.bigCell.elevation < 50) {
+//                     t += `${count}=`
+//                     t += `hills`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `hills`
+//                 } else if (!cell.bigCell.maskMarked && ((n > 0.1 && n < 0.2) || (n > 0.6 && n < 0.9))) {
+//                     t += `${count}=`
+//                     t += `forest`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `forest`
+//                 } else if (terrain === "arctic") {
+//                     t += `${count}=`
+//                     t += `taiga`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `taiga`
+//                 } else if (terrain === "grass") {
+//                     t += `${count}=`
+//                     t += `plains`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `plains`
+//                 } else if (terrain === "beach") {
+//                     t += `${count}=` // need because you won't be setting terrain for seas, etc.
+//                     t += `plains`
+//                     t += `\n`
+//                     world.provinces[i]["terrain"] = `plains`
+//                 }
+//             }
+//         }
+//     }
+//     console.log(t)
+//     var data = new Blob([t], {type: 'text/plain'})
+//     var url = window.URL.createObjectURL(data);
+//     let link = `<a id="terrain-download-link" download="00_province_terrain.txt" href="">Download Province Terrain</a><br>`
+//     document.getElementById("download-links").innerHTML += `${link}`;
+//     document.getElementById('terrain-download-link').href = url
+//     document.getElementById('terrain-download-link').click()
+// }
 
 function createBookmark() {
     let t = `${daBom}bm_mod_placeholder = {\n`
@@ -901,6 +966,7 @@ function civProcess() {
     world.kingdoms = createMyKingdoms(world)
     world.empires = createEmpires(world)
     createRealCounties()
+    createProvinceTerrain()
     assignTitleInfo()
     assignCultures();
     religionGenerator()

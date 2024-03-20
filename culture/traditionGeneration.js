@@ -32,9 +32,10 @@ const tradition_list = ["tradition_name","tradition_adaptive_skirmishing","tradi
 
 
 
-function getCultureTraditions (heritage, ethos) {
-    heritage_seed = `m_heritage${heritage.charCodeAt(1)%5+1}`
-    let calculatedTraditions = calculateTraditions(`m_${ethos}`, heritage_seed, `randomiser${getRandomInt(1,5)}` )
+function getCultureTraditions (heritage, ethos, cultureProvinces) {
+    let heritage_seed = `m_heritage${heritage.charCodeAt(1)%5+1}`
+    let terrain_seed = `m_${findDominantTerrain(cultureProvinces)}`
+    let calculatedTraditions = calculateTraditions(`m_${ethos}`, heritage_seed, terrain_seed, `randomiser${getRandomInt(1,5)}` )
     let traditionIndices = topTraditions(calculatedTraditions, getRandomInt(3,5))
     return convertToTraditions(traditionIndices)
 }
@@ -46,9 +47,6 @@ function topTraditions (arr, n) {
 }
 
 function calculateTraditions(...arrays) {
-    console.log(...arrays)
-    console.log(traditionsValues)
-    console.log(arrays[0])
     if (arrays.length === 0) return [];
     // Make a copy of the first array to avoid modifying the original arrays
     let result = traditionsValues[arrays[0]].slice();
@@ -74,4 +72,24 @@ function convertToTraditions(indicesArray) {
   function getRandomInt(min, max) {
     //inclusive on both sides
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function findDominantTerrain(cultureProvinces) {
+
+    let dominantTerrain = `plains`
+    let count = 0
+
+    for(let i = 0; i < cultureProvinces.length; i++){
+        currTerrain = world.provinces[cultureProvinces[i]].terrain
+        if(count == 0){
+            dominantTerrain = currTerrain
+        }
+        else if(dominantTerrain == currTerrain){
+            count++
+        }
+        else{
+            count--
+        }
+    }
+    return dominantTerrain
   }

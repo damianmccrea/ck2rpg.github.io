@@ -3919,7 +3919,7 @@ function downloadWithDelay(index, functions, delay) {
 GID("add-downloads").onclick = function() {
   const functionsToExecute = [
     () => createProvinceDefinitions(),
-    () => createProvinceTerrain(),
+    () => outputProvinceTerrain(),
     () => createLandedTitles(),
     () => createLocators("buildings"),
     () => createLocators("special_building"),
